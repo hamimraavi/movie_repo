@@ -1,29 +1,47 @@
 #!/bin/bash
 
-ls movies > movielist.txt
+#echo -n "Enter path for directory containing movies: "
+#read $pathd
 
-url1="http://www.omdbapi.com/?t="
-url2="&y=&plot=short&r=xml" 
+mkdir tmp1
+cd tmp1/
+touch movielist.txt
+touch output.txt
+cd ..
+
+ls movies > tmp1/movielist.txt
 
 for ((i=1;; i++)); do
-    read name || break;
-	echo $name
+	read name || break;
+	
+	original_name=$name
 
-name=${name// /.} #Replace all spaces with dot
-name=${name//_/.} #Replace all underscores with dot
-name=${name//-/.} #Replace all hyphens with dot
-name=${name//:/.} #Replace all colons with dot
+	name=${name// /.} 				 #Replace all spaces with dot
+	name=${name//_/.} 				 #Replace all underscores with dot
+	name=${name//-/.} 				 #Replace all hyphens with dot
+	name=${name//:/.} 				 #Replace all colons with dot
+	
+	url="http://www.omdbapi.com/?t=$name&y=&plot=short&r=xml"
 
-url="$url1$name$url2"
-#echo $url
-curl -s $url > imdb.txt
-#curl "http://www.omdbapi.com/?t=Godfather&y=&plot=short&r=xml" > imdb.txt
-t=`cat imdb.txt`
-rating="${t#*imdbRating}"
-rating="${rating%%%%}"
-res=${rating:2:3}	
-echo $res
+	t=$(curl -s $url)
+	rating="${t#*imdbRating}"
+	rating="${rating%%%%}"
+	res=${rating:2:3}
 
-done < movielist.txt
+	regex='[0-9]\.[0-9]'
 
+	if ! [[ $res =~ $regex ]]; then
+		res=N/A
+	fi	
+	
+	#echo $res
+	
+	echo "  ${res}   ${original_name}" >> tmp1/output.txt	 
+		
+done < tmp1/movielist.txt
 
+echo "Ratings                      Movie"
+echo "======================================================="
+sort -k 1 -r tmp1/output.txt
+
+rm -r tmp1 
