@@ -19,9 +19,8 @@ main(){
 
   preprocess_temps $1
 
-  for ((i=1;; i++)); do
-	
-  read name || break;
+  for ((i=1;; i++)); do	
+    read name || break;
   
     original_name=$name
 
@@ -34,14 +33,14 @@ main(){
 
     curl_result=$(curl -s $url)
 
-    rating="${curl_result#*imdbRating}"
-    
-    if [[ $rating == =* ]]; then
+    echo "$curl_result" | grep -q 'False'
+    if [ $? -eq 1 ]; then                        #If movie name is listed
+      rating="${curl_result#*imdbRating}"
       res=$(echo $rating | grep -m 1 "[0-9]\+\.\+[0-9]" -o)
-    else
-      res=N/A
+    else                                         #If movie name is not listed
+      res="N/A"
     fi	
-	
+    
     echo "  ${res}   ${original_name}" >> /tmp/output.txt	 
 		
   done < /tmp/movielist.txt
