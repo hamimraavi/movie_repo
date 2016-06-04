@@ -2,32 +2,22 @@
 
 # $1 - destination directory containing movies
 
-function preprocess_temps(){
-  
-  touch /tmp/movielist.txt
-  touch /tmp/output.txt
-  ls $1 > /tmp/movielist.txt
-}
-
-function print_results(){
-  echo "Ratings                      Movie"
-  echo "========================================================"
-  sort -k 1 -r /tmp/output.txt
-}
-
 main(){
 
-  preprocess_temps $1
+  movielist=$(ls $1 | grep "")                   # Push movie names into variable
+  
+  movielist=${movielist// /.} 	      		 # Replace all spaces with dot
+  movielist=${movielist//_/.}    	      	 # Replace all underscores with dot
+  movielist=${movielist//-/.}    	      	 # Replace all hyphens with dot
+  movielist=${movielist//:/.}         		 # Replace all colons with dot
 
-  for ((i=1;; i++)); do	
-    read name || break;
+  output="Ratings                      Movie\n"
+  output="$output========================================================\n"
+
+  for name in ${movielist}; do                   # Iterate line by line	
   
     original_name=$name
-
-    name=${name// /.} 				 # Replace all spaces with dot
-    name=${name//_/.} 				 # Replace all underscores with dot
-    name=${name//-/.} 				 # Replace all hyphens with dot
-    name=${name//:/.} 				 # Replace all colons with dot
+    original_name=${original_name//./ }          # Replace all dots with spaces
 	
     url="http://www.omdbapi.com/?t=$name&y=&plot=short&r=xml"
 
@@ -41,14 +31,11 @@ main(){
       res="N/A"
     fi	
     
-    echo "  ${res}   ${original_name}" >> /tmp/output.txt	 
+    output="$output  $res   ${original_name}\n"	 
 		
-  done < /tmp/movielist.txt
+  done
 
-  print_results
-
-  rm /tmp/movielist.txt
-  rm /tmp/output.txt
+  echo -e $output | sort -rk1
 }
 
 main "$@"
