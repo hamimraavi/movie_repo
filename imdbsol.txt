@@ -60,7 +60,8 @@ main(){
 
   print_results
 
-  #rm -r tmp1 
+  rm /tmp/movielist.txt
+  rm /tmp/output.txt
 }
 
 main "$@"
