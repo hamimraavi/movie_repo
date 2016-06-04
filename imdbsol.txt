@@ -1,5 +1,6 @@
 #!/bin/bash
 
+curl http://www.omdbapi.com/\?t\=Godfather\&y\=\&plot\=short\&r\=xml > imdb.txt
 t=`cat imdb.txt`
 rating="${t#*imdbRating}"
 rating="${rating%%%%}"
