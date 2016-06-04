@@ -38,8 +38,7 @@ main(){
   rating="${rating%%%%}"
   
   if [[ $rating == =* ]]; then
-    res=$(echo $rating | grep -m 1 "[0-9]\.[0-9]" -o)
-    #res=$(echo $rating | grep -m 1 "\".*\"" -o)
+    res=$(echo $rating | grep -m 1 "[0-9]\+\.\+[0-9]" -o)
   else
     res=N/A
   fi	
