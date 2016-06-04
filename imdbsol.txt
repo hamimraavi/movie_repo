@@ -2,12 +2,8 @@
 
 # $1 - destination directory containing movies
 
-
-
 function preprocess_temps(){
-  #TODO(hamim): Remove local temp files
-
-  #mkdir tmp1
+  
   touch /tmp/movielist.txt
   touch /tmp/output.txt
   ls $1 > /tmp/movielist.txt
@@ -37,20 +33,14 @@ main(){
   url="http://www.omdbapi.com/?t=$name&y=&plot=short&r=xml"
 
   curl_result=$(curl -s $url)
-  
-  #rat1=grep -o 'imdbRating.*' | cut -f2- -d':' 
-
-  #echo $rat1
 
   rating="${curl_result#*imdbRating}"
   rating="${rating%%%%}"
-  res=${rating:2:3}
-
-  #TODO(hamim): Use an alternate approach for field extraction
-
-  regex='[0-9]\.[0-9]'
-
-  if ! [[ $res =~ $regex ]]; then
+  
+  if [[ $rating == =* ]]; then
+    res=$(echo $rating | grep -m 1 "[0-9]\.[0-9]" -o)
+    #res=$(echo $rating | grep -m 1 "\".*\"" -o)
+  else
     res=N/A
   fi	
 	
