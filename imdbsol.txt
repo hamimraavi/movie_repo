@@ -1,46 +1,53 @@
 #!/bin/bash
 
-mkdir tmp1
-cd tmp1/
-touch movielist.txt
-touch output.txt
-cd ..
+function preprocess_temps(){
+  #TODO(hamim): Remove local temp files
 
-ls $1 > tmp1/movielist.txt
+  mkdir tmp1
+  touch tmp1/movielist.txt
+  touch tmp1/output.txt
+  ls $1 > tmp1/movielist.txt
+}
+
+function print_results(){
+  echo "Ratings                      Movie"
+  echo "========================================================"
+  sort -k 1 -r tmp1/output.txt
+}
+
+preprocess_temps $1
 
 for ((i=1;; i++)); do
 	
-	read name || break;
-	
-	original_name=$name
+  read name || break;
+  
+  original_name=$name
 
-	name=${name// /.} 				 #Replace all spaces with dot
-	name=${name//_/.} 				 #Replace all underscores with dot
-	name=${name//-/.} 				 #Replace all hyphens with dot
-	name=${name//:/.} 				 #Replace all colons with dot
+  name=${name// /.} 				 # Replace all spaces with dot
+  name=${name//_/.} 				 # Replace all underscores with dot
+  name=${name//-/.} 				 # Replace all hyphens with dot
+  name=${name//:/.} 				 # Replace all colons with dot
 	
-	url="http://www.omdbapi.com/?t=$name&y=&plot=short&r=xml"
+  url="http://www.omdbapi.com/?t=$name&y=&plot=short&r=xml"
 
-	curl_result=$(curl -s $url)
-	rating="${curl_result#*imdbRating}"
-	rating="${rating%%%%}"
-	res=${rating:2:3}
+  curl_result=$(curl -s $url)
+  rating="${curl_result#*imdbRating}"
+  rating="${rating%%%%}"
+  res=${rating:2:3}
 
-	regex='[0-9]\.[0-9]'
+  #TODO(hamim): Use an alternate approach for field extraction
 
-	if ! [[ $res =~ $regex ]]; then
-		res=N/A
-	fi	
+  regex='[0-9]\.[0-9]'
+
+  if ! [[ $res =~ $regex ]]; then
+    res=N/A
+  fi	
 	
-	#echo $res
-	
-	echo "  ${res}   ${original_name}" >> tmp1/output.txt	 
+  echo "  ${res}   ${original_name}" >> tmp1/output.txt	 
 		
 done < tmp1/movielist.txt
 
-echo "Ratings                      Movie"
-echo "======================================================="
-sort -k 1 -r tmp1/output.txt
+print_results
 
 rm -r tmp1 
 
