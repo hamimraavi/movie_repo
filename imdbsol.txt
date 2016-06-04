@@ -1,23 +1,29 @@
 #!/bin/bash
 
+# $1 - destination directory containing movies
+
+
+
 function preprocess_temps(){
   #TODO(hamim): Remove local temp files
 
-  mkdir tmp1
-  touch tmp1/movielist.txt
-  touch tmp1/output.txt
-  ls $1 > tmp1/movielist.txt
+  #mkdir tmp1
+  touch /tmp/movielist.txt
+  touch /tmp/output.txt
+  ls $1 > /tmp/movielist.txt
 }
 
 function print_results(){
   echo "Ratings                      Movie"
   echo "========================================================"
-  sort -k 1 -r tmp1/output.txt
+  sort -k 1 -r /tmp/output.txt
 }
 
-preprocess_temps $1
+main(){
 
-for ((i=1;; i++)); do
+  preprocess_temps $1
+
+  for ((i=1;; i++)); do
 	
   read name || break;
   
@@ -31,6 +37,11 @@ for ((i=1;; i++)); do
   url="http://www.omdbapi.com/?t=$name&y=&plot=short&r=xml"
 
   curl_result=$(curl -s $url)
+  
+  #rat1=grep -o 'imdbRating.*' | cut -f2- -d':' 
+
+  #echo $rat1
+
   rating="${curl_result#*imdbRating}"
   rating="${rating%%%%}"
   res=${rating:2:3}
@@ -43,11 +54,14 @@ for ((i=1;; i++)); do
     res=N/A
   fi	
 	
-  echo "  ${res}   ${original_name}" >> tmp1/output.txt	 
+  echo "  ${res}   ${original_name}" >> /tmp/output.txt	 
 		
-done < tmp1/movielist.txt
+  done < /tmp/movielist.txt
 
-print_results
+  print_results
 
-rm -r tmp1 
+  #rm -r tmp1 
+}
+
+main "$@"
 
