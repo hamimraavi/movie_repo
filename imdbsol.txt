@@ -1,17 +1,15 @@
 #!/bin/bash
 
-#echo -n "Enter path for directory containing movies: "
-#read $pathd
-
 mkdir tmp1
 cd tmp1/
 touch movielist.txt
 touch output.txt
 cd ..
 
-ls movies > tmp1/movielist.txt
+ls $1 > tmp1/movielist.txt
 
 for ((i=1;; i++)); do
+	
 	read name || break;
 	
 	original_name=$name
@@ -23,8 +21,8 @@ for ((i=1;; i++)); do
 	
 	url="http://www.omdbapi.com/?t=$name&y=&plot=short&r=xml"
 
-	t=$(curl -s $url)
-	rating="${t#*imdbRating}"
+	curl_result=$(curl -s $url)
+	rating="${curl_result#*imdbRating}"
 	rating="${rating%%%%}"
 	res=${rating:2:3}
 
@@ -45,3 +43,4 @@ echo "======================================================="
 sort -k 1 -r tmp1/output.txt
 
 rm -r tmp1 
+
