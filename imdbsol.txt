@@ -1,8 +1,22 @@
 #!/bin/bash
 
-curl http://www.omdbapi.com/\?t\=Godfather\&y\=\&plot\=short\&r\=xml > imdb.txt
+url1="http://www.omdbapi.com/?t="
+url2="&y=&plot=short&r=xml" 
+
+for ((i=1;; i++)); do
+    read name || break;
+	echo $name
+
+url="$url1$name$url2"
+echo $url
+curl $url > imdb.txt
+#curl "http://www.omdbapi.com/?t=Godfather&y=&plot=short&r=xml" > imdb.txt
 t=`cat imdb.txt`
 rating="${t#*imdbRating}"
 rating="${rating%%%%}"
 res=${rating:2:3}	
 echo $res
+
+done < movielist.txt
+
+
