@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ls movies > movielist.txt
+
 url1="http://www.omdbapi.com/?t="
 url2="&y=&plot=short&r=xml" 
 
@@ -7,9 +9,14 @@ for ((i=1;; i++)); do
     read name || break;
 	echo $name
 
+name=${name// /.} #Replace all spaces with dot
+name=${name//_/.} #Replace all underscores with dot
+name=${name//-/.} #Replace all hyphens with dot
+name=${name//:/.} #Replace all colons with dot
+
 url="$url1$name$url2"
-echo $url
-curl $url > imdb.txt
+#echo $url
+curl -s $url > imdb.txt
 #curl "http://www.omdbapi.com/?t=Godfather&y=&plot=short&r=xml" > imdb.txt
 t=`cat imdb.txt`
 rating="${t#*imdbRating}"
