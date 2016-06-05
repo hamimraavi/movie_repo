@@ -1,7 +1,0 @@
-#!/bin/bash
-
-t=`cat imdb.txt`
-rating="${t#*imdbRating}"
-rating="${rating%%%%}"
-res=${rating:2:3}	
-echo $res
