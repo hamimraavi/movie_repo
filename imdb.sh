@@ -26,7 +26,7 @@ main(){
     echo "$curl_result" | grep -q 'False'
     if [ $? -eq 1 ]; then                        #If movie name is listed
       rating="${curl_result#*imdbRating}"
-      res=$(echo $rating | grep -m 1 "[0-9]\+\.\+[0-9]" -o)
+      res=$(echo $rating | grep -m 1 -o "[0-9]\+\.[0-9]\+")
     else                                         #If movie name is not listed
       res="N/A"
     fi	
